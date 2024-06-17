@@ -6,13 +6,14 @@
 
 Let's first define our tunnels between Worker and Main thread, there are two ways to do that.
 First one is to directly use `ContextTunnel` without any implementation-specific logic and manually define
-its specifics.
+its specifics. Second one, is to use `WorkerTunnel` specifically designed for communication between Node's Workers.
 
 ```typescript
 const workerClassTunnel = new ContextTunnel<WorkerClass>("worker_class");
 const mainClassTunnel = new ContextTunnel<MainClass>("main");
 
-// Separate library for WorkerPool, although this library was designed with worker pools in mind too.
+// Separate library for WorkerPool, although this library
+// was designed with worker pools in mind too.
 const workerPool = new WorkerPool(4);
 
 class WorkerClass {
@@ -75,7 +76,7 @@ class MainClass {
 if (workerPool.isMain()) {
   workerPool.spawn();
 
-  workerPool.getFree().api().myFunction(2);
+  await workerPool.getFreeWorker().api().myFunction(2);
 }
 
 ```
@@ -124,9 +125,9 @@ const mainGate = new ElectronMainGate(ipcMain)
 mainGate
   // Defines a handler for the tunnel, a handler is a special case of object which inherits from ContextHandler
   // so that function calls have platform-specific metadata about the message being sent.
-  .handle(tunnel, new MyReceiverHandler())
+  .incomingHandler(tunnel, new MyReceiverHandler())
   // Exposes an object to the tunnel, so that it can be accessed from the renderer process as-is.
-  .expose(myClassTunnel, new MyClass());
+  .incoming(myClassTunnel, new MyClass());
 
 // When tunnel is a ContextTunnel
 tunnel.connect(mainGate, new ElectronRendererGateAddress(webContents)).myFunction(1);
