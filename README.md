@@ -2,14 +2,9 @@
 
 ## Node.js workers
 
-For example, when you run workers from the same file, you can use `ContextTunnel` and proxy functions.
-
-Proxied objects can be used when following conditions are met:
-- they are defined in top-level scope and in the same order in all contexts
-
 ### Example usage
 
-Let's first define our tunnel between Worker and Main context, there are two ways to do that.
+Let's first define our tunnels between Worker and Main thread, there are two ways to do that.
 First one is to directly use `ContextTunnel` without any implementation-specific logic and manually define
 its specifics.
 
